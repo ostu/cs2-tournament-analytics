@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ report_title }}</title>
+<style>
+{{ css | safe }}
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+  <header class="app-header">
+    <div>
+      <h1 id="meta-title">{{ report_title }}</h1>
+      <div class="subtitle" id="meta-updated">—</div>
+    </div>
+    <div class="header-kpis">
+      <div class="header-kpi"><div class="value" id="meta-tournaments">—</div><div class="label">Турниров</div></div>
+      <div class="header-kpi"><div class="value" id="meta-players">—</div><div class="label">Игроков</div></div>
+      <div class="header-kpi"><div class="value" id="meta-teams">—</div><div class="label">Команд</div></div>
+      <div class="header-kpi"><div class="value" id="meta-maps">—</div><div class="label">Карт</div></div>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="overview">Обзор</button>
+    <button class="tab-btn" data-tab="players">Игроки</button>
+    <button class="tab-btn" data-tab="teams">Команды</button>
+    <button class="tab-btn" data-tab="teammap">Team × Map</button>
+  </nav>
+
+  <div class="filter-bar">
+    <div class="filter-field"><label>Турнир</label>
+      <select id="filter-tournament"><option value="">Все</option></select>
+    </div>
+    <div class="filter-field"><label>Команда</label>
+      <select id="filter-team"><option value="">Все</option></select>
+    </div>
+    <div class="filter-field"><label>Игрок</label>
+      <select id="filter-player"><option value="">Все</option></select>
+    </div>
+    <div class="filter-field"><label>Карта</label>
+      <select id="filter-map"><option value="">Все</option></select>
+    </div>
+    <button class="btn-reset" id="btn-reset-filters">Сбросить фильтры</button>
+  </div>
+
+  <main>
+    <section class="tab-page active" id="page-overview"></section>
+    <section class="tab-page" id="page-players"></section>
+    <section class="tab-page" id="page-teams"></section>
+    <section class="tab-page" id="page-teammap"></section>
+  </main>
+
+  <section class="about-block">
+    <h3>О данных</h3>
+    <ul>
+      <li>Имена игроков в публичной версии заменены псевдонимами.</li>
+      <li>Показатели ADR и MVP собирались не на всех турнирах, поэтому для части периодов они могут отсутствовать.</li>
+      <li>Рейтинг проходит четыре стадии: <strong>A</strong> — старт после нормализации, <strong>C</strong> — после калибровочных игр, <strong>N</strong> — рейтинг перед формированием постоянных команд, <strong>T</strong> — итог после турнира.</li>
+      <li>Статистика рассчитана по результатам сыгранных матчей.</li>
+    </ul>
+  </section>
+
+  <footer class="app-footer">CS2 Tournament Report — статическая сборка. Данные не обновляются в реальном времени.</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<!--
+  Офлайн-режим без интернета: ECharts подключается через CDN. Если dashboard.html
+  должен работать без доступа в сеть, скачайте echarts.min.js (https://echarts.apache.org/)
+  один раз вручную, положите в dashboard/assets/vendor/echarts.min.js и замените строку выше на:
+  <script src="dashboard/assets/vendor/echarts.min.js"></script>
+  Графики без ECharts корректно показывают заглушку "график недоступен" (см. app.js ensureChart),
+  остальной дашборд (таблицы, фильтры) продолжает работать.
+-->
+<script>
+window.APP_CONFIG = {{ dashboard_config | safe }};
+window.APP_DATA = {{ app_data | safe }};
+</script>
+<script>
+{{ js | safe }}
+</script>
+</body>
+</html>

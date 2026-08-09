@@ -1,0 +1,130 @@
+cs_farpost_tournament_results
+let
+    Source = Csv.Document(Web.Contents("<REDACTED_GOOGLE_SHEETS_PUBLISH_URL_tournament_results>"),[Delimiter=",", Columns=20, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"matchId", Int64.Type}, {"mapId", Int64.Type}, {"map", type text}, {"date", type date}, {"rounds", Int64.Type}, {"w/l", type text}, {"team", type text}, {"id", type text}, {"kills", Int64.Type}, {"assists", Int64.Type}, {"deaths", Int64.Type}, {"headshots", Int64.Type}, {"headshots_percent", Int64.Type}, {"mvps", Int64.Type}, {"triple_kills", Int64.Type}, {"quadro_kills", Int64.Type}, {"penta_kills", Int64.Type}}),
+    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"headshots", "headshots_percent", "triple_kills", "quadro_kills", "penta_kills"}),
+    #"Added Custom1" = Table.AddColumn(#"Removed Columns", "name-tournament-mapId", each [id]&"_"&[tournament]&"_"&Number.ToText([mapId])),
+    #"Merged Queries" = Table.NestedJoin(#"Added Custom1", {"name-tournament-mapId"}, cs_farpost_elo_changes, {"name-tournament-mapId"}, "cs_farpost_elo_changes", JoinKind.LeftOuter),
+    #"Expanded cs_farpost_elo_changes" = Table.ExpandTableColumn(#"Merged Queries", "cs_farpost_elo_changes", {"elo_diff"}, {"elo_diff"}),
+    #"Renamed Columns" = Table.RenameColumns(#"Expanded cs_farpost_elo_changes",{{"tournament", "Tournament"}})
+in
+    #"Renamed Columns"
+	
+cs_farpost_elo_changes	
+let
+    Source = Csv.Document(Web.Contents("<REDACTED_GOOGLE_SHEETS_PUBLISH_URL_elo_changes>"),[Delimiter=",", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    #"Changed Type2" = Table.TransformColumnTypes(#"Promoted Headers",{{"mapId", Int64.Type}, {"elo_diff", Int64.Type}}),
+    #"Added to Column" = Table.TransformColumns(#"Changed Type2", {{"mapId", each _ + 1, type number}}),
+    #"Added Custom" = Table.AddColumn(#"Added to Column", "name-tournament-mapId", each [id]&"_"&[tournament]&"_"&Number.ToText([mapId]))
+in
+    #"Added Custom"
+	
+cs_farpost_elo_norm
+let
+    Source = Csv.Document(Web.Contents("<REDACTED_GOOGLE_SHEETS_PUBLISH_URL_elo_norm>"),[Delimiter=",", Columns=3, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    #"Renamed Columns" = Table.RenameColumns(#"Promoted Headers",{{"tournament", "Tournament_mapId-map"}}),
+    #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns",{{"elo_diff", Int64.Type}})
+in
+    #"Changed Type"
+	
+cs_farpost_tournament_score
+let
+    Source = Csv.Document(Web.Contents("<REDACTED_GOOGLE_SHEETS_PUBLISH_URL_tournament_score>"),[Delimiter=",", Columns=3, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    #"Added Custom" = Table.AddColumn(#"Promoted Headers", "tournament-team", each [tournament]&"_"&[team]),
+    #"Changed Type" = Table.TransformColumnTypes(#"Added Custom",{{"place", Int64.Type}, {"tournament-team", type text}})
+in
+    #"Changed Type"
+	
+players
+let
+    Source = Csv.Document(Web.Contents("<REDACTED_GOOGLE_SHEETS_PUBLISH_URL_players>"),[Delimiter=",", Columns=18, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"department", type text}, {"discord_name", type text}, {"faceit_name", type text}, {"faceit_link", type text}, {"fio", type text}, {"steam_account", type text}, {"steam_name", type text}, {"player_id", Int64.Type}})
+in
+    #"Changed Type"
+	
+cs
+let
+    Source = Table.Combine({cs_farpost_tournament_results}),
+    #"Duplicated Column" = Table.DuplicateColumn(Source, "result", "result - Copy"),
+    #"Split Column by Delimiter" = Table.SplitColumn(#"Duplicated Column", "result - Copy", Splitter.SplitTextByDelimiter("-", QuoteStyle.Csv), {"r1", "r2"}),
+    #"Changed Type1" = Table.TransformColumnTypes(#"Split Column by Delimiter",{{"r1", Int64.Type}, {"r2", Int64.Type}, {"adr", Int64.Type}}),
+    #"Added Custom2" = Table.AddColumn(#"Changed Type1", "PP", each if([#"w/l"] = "W") then [r1]-[r2]
+else [r2]-[r1]),
+    #"Changed Type2" = Table.TransformColumnTypes(#"Added Custom2",{{"PP", Int64.Type}, {"name-tournament-mapId", type text}, {"Tournament", type text}}),
+    #"Added Custom3" = Table.AddColumn(#"Changed Type2", "mapId-map", each Number.ToText([mapId])&"_"&[map]),
+    #"Added Custom" = Table.AddColumn(#"Added Custom3", "Tournament_mapId", each [Tournament]&"_"&Number.ToText([mapId])),
+    #"Sorted Rows" = Table.Sort(#"Added Custom",{{"id", Order.Ascending}, {"Tournament_mapId", Order.Ascending}}),
+    #"Added Custom1" = Table.AddColumn(#"Sorted Rows", "tMapIndex", each Text.Range([Tournament], 0, Text.Length([Tournament])-1)&(if Text.Range([Tournament], Text.Length([Tournament])-1) = "t" then "2" else "1")&Number.ToText([mapId],"00"))
+in
+    #"Added Custom1"
+
+cs2_team_score
+let
+    Source = cs,
+    #"Removed Other Columns" = Table.SelectColumns(Source,{"matchId", "mapId", "map","result", "w/l", "team", "Tournament"}),
+    #"Added Custom1" = Table.AddColumn(#"Removed Other Columns", "Tournament_mapId", each [Tournament]&"_"&Number.ToText([mapId])),
+    #"Removed Duplicates" = Table.Distinct(#"Added Custom1"),
+    #"Pivoted Column" = Table.Pivot(#"Removed Duplicates", List.Distinct(#"Removed Duplicates"[#"w/l"]), "w/l", "team"),
+    #"Duplicated Column" = Table.DuplicateColumn(#"Pivoted Column", "matchId", "matchIdDig"),
+    #"Changed Type" = Table.TransformColumnTypes(#"Duplicated Column",{{"matchId", type text}}),
+    #"Added Prefix" = Table.TransformColumns(#"Changed Type", {{"matchId", each "m" & _, type text}}),
+    #"Added Suffix" = Table.TransformColumns(#"Added Prefix", {{"matchId", each _ & "_1", type text}}),
+    #"Added Custom" = Table.AddColumn(#"Added Suffix", "w/l", each "1"),
+    #"Changed Type1" = Table.TransformColumnTypes(#"Added Custom",{{"w/l", type number}}),
+    #"Appended Query" = Table.Combine({#"Changed Type1", cs2_team_score_2})
+in
+    #"Appended Query"
+	
+	
+cs2_team_score_2
+let
+    Source = cs,
+    #"Removed Other Columns" = Table.SelectColumns(Source,{"matchId", "mapId","map", "result", "w/l", "team","Tournament"}),
+    #"Added Custom2" = Table.AddColumn(#"Removed Other Columns", "Tournament_mapId", each [Tournament]&"_"&Number.ToText([mapId])),
+    #"Removed Duplicates" = Table.Distinct(#"Added Custom2"),
+    #"Pivoted Column" = Table.Pivot(#"Removed Duplicates", List.Distinct(#"Removed Duplicates"[#"w/l"]), "w/l", "team"),
+    #"Duplicated Column" = Table.DuplicateColumn(#"Pivoted Column", "matchId", "matchIdDig"),
+    #"Changed Type" = Table.TransformColumnTypes(#"Duplicated Column",{{"matchId", type text}}),
+    #"Added Prefix" = Table.TransformColumns(#"Changed Type", {{"matchId", each "m" & _, type text}}),
+    #"Added Suffix" = Table.TransformColumns(#"Added Prefix", {{"matchId", each _ & "_2", type text}}),
+    #"Added Custom" = Table.AddColumn(#"Added Suffix", "w/l", each "2"),
+    #"Changed Type1" = Table.TransformColumnTypes(#"Added Custom",{{"w/l", type number}}),
+    #"Renamed Columns" = Table.RenameColumns(#"Changed Type1",{{"W", "L"}, {"L", "W"}}),
+    #"Split Column by Delimiter" = Table.SplitColumn(#"Renamed Columns", "result", Splitter.SplitTextByDelimiter("-", QuoteStyle.Csv), {"result.1", "result.2"}),
+    #"Added Custom1" = Table.AddColumn(#"Split Column by Delimiter", "result", each [result.2]&"-"&[result.1]),
+    #"Changed Type2" = Table.TransformColumnTypes(#"Added Custom1",{{"result", type text}}),
+    #"Removed Columns" = Table.RemoveColumns(#"Changed Type2",{"result.1", "result.2"})
+in
+    #"Removed Columns"
+	
+tournaments
+let
+    Source = Csv.Document(Web.Contents("<REDACTED_GOOGLE_SHEETS_PUBLISH_URL_players>"),[Delimiter=",", Columns=39, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    #"Removed Columns" = Table.RemoveColumns(#"Promoted Headers",{"department", "discord_name", "faceit_name", "faceit_link", "fio", "steam_name", "steam_account", "city", "another_names", "id"}),
+    #"Unpivoted Other Columns" = Table.UnpivotOtherColumns(#"Removed Columns", {"player_id"}, "Attribute", "Value"),
+    #"Split Column by Delimiter" = Table.SplitColumn(#"Unpivoted Other Columns", "Attribute", Splitter.SplitTextByEachDelimiter({"_"}, QuoteStyle.Csv, false), {"Tournament", "Attribute.2"}),
+    #"Pivoted Column" = Table.Pivot(#"Split Column by Delimiter", List.Distinct(#"Split Column by Delimiter"[Attribute.2]), "Attribute.2", "Value"),
+    #"Added Custom" = Table.AddColumn(#"Pivoted Column", "tournament-team", each [Tournament]&"_"&[team]),
+    #"Changed Type" = Table.TransformColumnTypes(#"Added Custom",{{"elo", Int64.Type}, {"elo_calib", Int64.Type}, {"elo_start", Int64.Type}, {"player_id", Int64.Type}, {"tournament-team", type text}})
+in
+    #"Changed Type"
+	
+player_elo_diff
+let
+    Source = cs,
+    #"Added Custom" = Table.AddColumn(Source, "Tournament_mapId-map", each [Tournament]&"_"&Text.PadStart(Text.From([mapId]), 2, "0")&"_"&[map]),
+    #"Removed Other Columns" = Table.SelectColumns(#"Added Custom",{"elo_diff", "Tournament_mapId-map", "id"}),
+    #"Appended Query" = Table.Combine({#"Removed Other Columns", cs_farpost_elo_norm}),
+    #"Sorted Rows" = Table.Sort(#"Appended Query",{{"id", Order.Ascending}, {"Tournament_mapId-map", Order.Ascending}}),
+    #"Duplicated Column" = Table.DuplicateColumn(#"Sorted Rows", "Tournament_mapId-map", "Tournament_mapId-map - Copy"),
+    #"Extracted First Characters" = Table.TransformColumns(#"Duplicated Column", {{"Tournament_mapId-map - Copy", each Text.Start(_, 1), type text}}),
+    #"Renamed Columns" = Table.RenameColumns(#"Extracted First Characters",{{"Tournament_mapId-map - Copy", "Tournament"}}),
+    #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns",{{"Tournament", Int64.Type}})
+in
+    #"Changed Type"

@@ -1,0 +1,69 @@
+# ============================================================================
+# Privacy / publication safety — см. docs/privacy_and_publication.md и
+# artifacts/publication/github_publication_audit.md.
+# .gitignore не защищает файлы, которые уже были закоммичены — на момент
+# написания этот репозиторий не имеет git-истории (0 коммитов), поэтому эти
+# правила действуют ДО первого коммита, а не как ретроактивная очистка.
+# ============================================================================
+
+# Исходные данные с полным PII (fio, city, department, discord, faceit, steam) — НИКОГДА не публикуются.
+data/raw/
+
+# Приватная таблица псевдонимов игроков (private_player_key -> public_nickname).
+data/private/
+
+# Промежуточные/канонические слои pipeline — регенерируются из data/raw/ +
+# data/private/, содержат private_player_key (внутренний идентификатор игрока)
+# — публикуется только data/public/.
+data/interim/
+data/processed/
+
+# Таблица review команд-алиасов — одна историческая строка (название команды)
+# буквально содержит id игрока как подстроку (см. docs/privacy_and_publication.md
+# §0, пример анонимизирован даже там); файл регенерируется из data/raw/ через
+# pipeline/build_team_aliases_review.py и бесполезен без него, поэтому исключён
+# целиком, а не редактируется построчно.
+config/team_aliases_review.csv
+
+# Внутренние audit-артефакты (Audit v1/v2) — построены прямым профилированием
+# data/raw/ и содержат реальные steam/discord/faceit-ссылки, ФИО, город,
+# департамент, id игроков (пример: artifacts/data_profile/columns_profile.csv).
+# artifacts/validation/validation.{md,json} и team_roster_anomalies.* из этого
+# правила НЕ исключаются leak-checker'ом автоматически — team_roster_anomalies.*
+# содержит реальные id игроков и тоже исключён явно.
+artifacts/audit_v2/
+artifacts/data_profile/
+artifacts/validation/team_roster_anomalies.*
+
+# Legacy Colab/Jupyter notebooks — кэшированные ячейки вывода содержат реальные
+# ФИО и игровые id/ники (не только код, но и сохранённые данные выполнения).
+# Публикуется только их текстовое описание в docs/, не сами файлы.
+cs_farpost_tournament.ipynb
+cs_farpost_tournament_calib.ipynb
+
+# ============================================================================
+# Секреты / credentials
+# ============================================================================
+.env
+.env.*
+*.pem
+*.key
+*credentials*
+*secrets*
+
+# ============================================================================
+# Python
+# ============================================================================
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# ============================================================================
+# IDE / OS
+# ============================================================================
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

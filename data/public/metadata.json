@@ -1,0 +1,498 @@
+{
+  "report_title": "CS2 Tournament Report",
+  "data_as_of": "2026-04-05T00:00:00",
+  "tournament_count": 7,
+  "public_player_count": 84,
+  "team_count": 43,
+  "map_count": 8,
+  "tournaments": [
+    {
+      "tournament_number": 1,
+      "tournament_label": "Турнир 1"
+    },
+    {
+      "tournament_number": 2,
+      "tournament_label": "Турнир 2"
+    },
+    {
+      "tournament_number": 3,
+      "tournament_label": "Турнир 3"
+    },
+    {
+      "tournament_number": 4,
+      "tournament_label": "Турнир 4"
+    },
+    {
+      "tournament_number": 5,
+      "tournament_label": "Турнир 5"
+    },
+    {
+      "tournament_number": 6,
+      "tournament_label": "Турнир 6"
+    },
+    {
+      "tournament_number": 7,
+      "tournament_label": "Турнир 7"
+    }
+  ],
+  "teams": [
+    "8bit",
+    "Abaunda",
+    "Amogus twerk",
+    "AutostoryDATeam",
+    "BRICS",
+    "BackdoorBeauty",
+    "Boys next door (and girl)",
+    "Brainrot",
+    "Deep Dark Fantasy",
+    "Dominating Pickles",
+    "DoshirakPower",
+    "DudosTeam",
+    "Eco Vibe",
+    "Gambot",
+    "Ninja Turtles",
+    "No luck, no skill",
+    "RunChickenRun",
+    "RunChikenRun",
+    "Rush Banana",
+    "Rushingan",
+    "Sold Out",
+    "VIRTUS_NOOB",
+    "VovaUnichtojIh",
+    "noZOOmer$",
+    "s1mple_donk",
+    "sweaty dumpling",
+    "АбНАЛ",
+    "Абсолютно неформальные аналитические люди",
+    "Авито",
+    "ГдеБомба?",
+    "Ж.О.П.А.",
+    "Команда (имя скрыто #1)",
+    "Мы выиграли",
+    "Охотничьи колбаски",
+    "Плотина Крутых Бобров",
+    "ПодпивасЫ",
+    "ПротивЦензуры",
+    "РашА",
+    "Файлы Эйнштейна",
+    "Шахтёрское удовольствие",
+    "мИдоеды",
+    "синДром",
+    "♂Boys next door (and girl)♀"
+  ],
+  "teams_by_tournament": {
+    "1": [
+      "AutostoryDATeam",
+      "BackdoorBeauty",
+      "DoshirakPower",
+      "Gambot",
+      "RunChickenRun",
+      "VIRTUS_NOOB",
+      "sweaty dumpling"
+    ],
+    "2": [
+      "Boys next door (and girl)",
+      "DudosTeam",
+      "Ninja Turtles",
+      "VovaUnichtojIh",
+      "Авито",
+      "Команда (имя скрыто #1)",
+      "Охотничьи колбаски"
+    ],
+    "3": [
+      "Amogus twerk",
+      "Rush Banana",
+      "АбНАЛ",
+      "Мы выиграли"
+    ],
+    "4": [
+      "BRICS",
+      "Deep Dark Fantasy",
+      "Dominating Pickles",
+      "No luck, no skill",
+      "синДром"
+    ],
+    "5": [
+      "Sold Out",
+      "noZOOmer$",
+      "ГдеБомба?",
+      "Плотина Крутых Бобров",
+      "РашА"
+    ],
+    "6": [
+      "Abaunda",
+      "Brainrot",
+      "Eco Vibe",
+      "Sold Out",
+      "s1mple_donk",
+      "Ж.О.П.А.",
+      "ПротивЦензуры",
+      "мИдоеды"
+    ],
+    "7": [
+      "8bit",
+      "Brainrot",
+      "Rushingan",
+      "ПодпивасЫ",
+      "Файлы Эйнштейна",
+      "Шахтёрское удовольствие",
+      "мИдоеды"
+    ]
+  },
+  "maps": [
+    "de_ancient",
+    "de_anubis",
+    "de_dust2",
+    "de_inferno",
+    "de_mirage",
+    "de_nuke",
+    "de_overpass",
+    "de_vertigo"
+  ],
+  "players": [
+    {
+      "public_player_id": "P-865cf33d",
+      "public_nickname": "Bold Ferret"
+    },
+    {
+      "public_player_id": "P-8697052b",
+      "public_nickname": "Bold Fox"
+    },
+    {
+      "public_player_id": "P-ac72e73b",
+      "public_nickname": "Brave Bison"
+    },
+    {
+      "public_player_id": "P-97d92f46",
+      "public_nickname": "Brave Fox"
+    },
+    {
+      "public_player_id": "P-72b7ee10",
+      "public_nickname": "Brave Gull"
+    },
+    {
+      "public_player_id": "P-d09f8faa",
+      "public_nickname": "Brave Orca"
+    },
+    {
+      "public_player_id": "P-4375667a",
+      "public_nickname": "Bright Marten"
+    },
+    {
+      "public_player_id": "P-c57aec0f",
+      "public_nickname": "Bright Panther"
+    },
+    {
+      "public_player_id": "P-ad067291",
+      "public_nickname": "Calm Falcon"
+    },
+    {
+      "public_player_id": "P-b9351399",
+      "public_nickname": "Calm Vole"
+    },
+    {
+      "public_player_id": "P-c5132335",
+      "public_nickname": "Cedar Eagle"
+    },
+    {
+      "public_player_id": "P-f2e18347",
+      "public_nickname": "Cedar Falcon"
+    },
+    {
+      "public_player_id": "P-e666163b",
+      "public_nickname": "Clever Cobra"
+    },
+    {
+      "public_player_id": "P-df1ea090",
+      "public_nickname": "Clever Skink"
+    },
+    {
+      "public_player_id": "P-847000f4",
+      "public_nickname": "Cobalt Lynx"
+    },
+    {
+      "public_player_id": "P-db7425f4",
+      "public_nickname": "Cobalt Orca"
+    },
+    {
+      "public_player_id": "P-3c34c414",
+      "public_nickname": "Cold Bear"
+    },
+    {
+      "public_player_id": "P-1ab68d2a",
+      "public_nickname": "Cold Bison"
+    },
+    {
+      "public_player_id": "P-45b3f3cf",
+      "public_nickname": "Cold Coyote"
+    },
+    {
+      "public_player_id": "P-ddcfa0cc",
+      "public_nickname": "Cold Orca"
+    },
+    {
+      "public_player_id": "P-d5f4ef1d",
+      "public_nickname": "Cold Serval"
+    },
+    {
+      "public_player_id": "P-959bd67e",
+      "public_nickname": "Copper Puma"
+    },
+    {
+      "public_player_id": "P-d1bbc185",
+      "public_nickname": "Crimson Falcon2"
+    },
+    {
+      "public_player_id": "P-757749d1",
+      "public_nickname": "Crimson Puma"
+    },
+    {
+      "public_player_id": "P-01a8e3f6",
+      "public_nickname": "Fierce Gull"
+    },
+    {
+      "public_player_id": "P-267e83cc",
+      "public_nickname": "Fierce Viper"
+    },
+    {
+      "public_player_id": "P-5f81b05e",
+      "public_nickname": "Fierce Wolf"
+    },
+    {
+      "public_player_id": "P-32066297",
+      "public_nickname": "Frozen Badger"
+    },
+    {
+      "public_player_id": "P-73547e6d",
+      "public_nickname": "Frozen Otter"
+    },
+    {
+      "public_player_id": "P-0de70c89",
+      "public_nickname": "Golden Skink"
+    },
+    {
+      "public_player_id": "P-39027be0",
+      "public_nickname": "Golden Stag"
+    },
+    {
+      "public_player_id": "P-fedf1613",
+      "public_nickname": "Golden Weasel"
+    },
+    {
+      "public_player_id": "P-f08dd795",
+      "public_nickname": "Grim Hawk"
+    },
+    {
+      "public_player_id": "P-59fc555b",
+      "public_nickname": "Grim Vole"
+    },
+    {
+      "public_player_id": "P-6b683c6f",
+      "public_nickname": "Grim Wren"
+    },
+    {
+      "public_player_id": "P-43ec6331",
+      "public_nickname": "Iron Falcon2"
+    },
+    {
+      "public_player_id": "P-e5b50ee7",
+      "public_nickname": "Iron Orca"
+    },
+    {
+      "public_player_id": "P-5e2a5672",
+      "public_nickname": "Iron Skink"
+    },
+    {
+      "public_player_id": "P-e4107af3",
+      "public_nickname": "Ivory Falcon2"
+    },
+    {
+      "public_player_id": "P-ceb40a0d",
+      "public_nickname": "Ivory Gull"
+    },
+    {
+      "public_player_id": "P-c1559fd0",
+      "public_nickname": "Ivory Marten"
+    },
+    {
+      "public_player_id": "P-1db70456",
+      "public_nickname": "Ivory Stag"
+    },
+    {
+      "public_player_id": "P-c851931a",
+      "public_nickname": "Ivory Weasel"
+    },
+    {
+      "public_player_id": "P-696edc8b",
+      "public_nickname": "Jade Eagle"
+    },
+    {
+      "public_player_id": "P-cdb0a9b7",
+      "public_nickname": "Jade Skink"
+    },
+    {
+      "public_player_id": "P-ec8737e0",
+      "public_nickname": "Jade Viper"
+    },
+    {
+      "public_player_id": "P-4ce5b0c8",
+      "public_nickname": "Loyal Ferret"
+    },
+    {
+      "public_player_id": "P-f264076e",
+      "public_nickname": "Loyal Hawk"
+    },
+    {
+      "public_player_id": "P-70401e51",
+      "public_nickname": "Loyal Kestrel"
+    },
+    {
+      "public_player_id": "P-8f06da5f",
+      "public_nickname": "Loyal Owl"
+    },
+    {
+      "public_player_id": "P-1e550b91",
+      "public_nickname": "Loyal Sable"
+    },
+    {
+      "public_player_id": "P-a380a34e",
+      "public_nickname": "Lunar Raven"
+    },
+    {
+      "public_player_id": "P-79475b9a",
+      "public_nickname": "Marble Sable"
+    },
+    {
+      "public_player_id": "P-46126a30",
+      "public_nickname": "Marble Serval"
+    },
+    {
+      "public_player_id": "P-42e73b4f",
+      "public_nickname": "Nimble Marmot"
+    },
+    {
+      "public_player_id": "P-cf8aeb4c",
+      "public_nickname": "Nimble Raven"
+    },
+    {
+      "public_player_id": "P-7d34f21c",
+      "public_nickname": "Nimble Sable"
+    },
+    {
+      "public_player_id": "P-4639a403",
+      "public_nickname": "Quiet Orca"
+    },
+    {
+      "public_player_id": "P-1846b0f3",
+      "public_nickname": "Quiet Skink"
+    },
+    {
+      "public_player_id": "P-87a87db3",
+      "public_nickname": "Rapid Jackal"
+    },
+    {
+      "public_player_id": "P-79a13b3d",
+      "public_nickname": "Shadow Ferret"
+    },
+    {
+      "public_player_id": "P-8671cb98",
+      "public_nickname": "Shadow Petrel"
+    },
+    {
+      "public_player_id": "P-318aaf0f",
+      "public_nickname": "Shadow Stag"
+    },
+    {
+      "public_player_id": "P-9ba1a232",
+      "public_nickname": "Sharp Raven"
+    },
+    {
+      "public_player_id": "P-2791cd7a",
+      "public_nickname": "Silent Heron"
+    },
+    {
+      "public_player_id": "P-f272752e",
+      "public_nickname": "Silent Kestrel"
+    },
+    {
+      "public_player_id": "P-a5746388",
+      "public_nickname": "Silent Marten"
+    },
+    {
+      "public_player_id": "P-a9169cb1",
+      "public_nickname": "Slate Stag"
+    },
+    {
+      "public_player_id": "P-df647b65",
+      "public_nickname": "Sly Cobra"
+    },
+    {
+      "public_player_id": "P-b5d2e39f",
+      "public_nickname": "Sly Falcon2"
+    },
+    {
+      "public_player_id": "P-9a3ebc7d",
+      "public_nickname": "Sly Stag"
+    },
+    {
+      "public_player_id": "P-b708d646",
+      "public_nickname": "Solar Lynx2"
+    },
+    {
+      "public_player_id": "P-4421b261",
+      "public_nickname": "Solar Puma"
+    },
+    {
+      "public_player_id": "P-9b78f8bd",
+      "public_nickname": "Steady Marmot"
+    },
+    {
+      "public_player_id": "P-695f719d",
+      "public_nickname": "Steady Wolf"
+    },
+    {
+      "public_player_id": "P-dc897db3",
+      "public_nickname": "Stormy Ferret"
+    },
+    {
+      "public_player_id": "P-c4edb905",
+      "public_nickname": "Swift Gull"
+    },
+    {
+      "public_player_id": "P-f5a97532",
+      "public_nickname": "Velvet Bison"
+    },
+    {
+      "public_player_id": "P-42b992bb",
+      "public_nickname": "Velvet Weasel"
+    },
+    {
+      "public_player_id": "P-3811ddde",
+      "public_nickname": "Velvet Wren"
+    },
+    {
+      "public_player_id": "P-9b1737d7",
+      "public_nickname": "Vivid Mantis"
+    },
+    {
+      "public_player_id": "P-47091a0f",
+      "public_nickname": "Vivid Osprey"
+    },
+    {
+      "public_player_id": "P-c6428d10",
+      "public_nickname": "Wild Cobra"
+    },
+    {
+      "public_player_id": "P-5396a250",
+      "public_nickname": "Wild Falcon2"
+    },
+    {
+      "public_player_id": "P-8de85a96",
+      "public_nickname": "Wild Orca"
+    },
+    {
+      "public_player_id": "P-78c388ae",
+      "public_nickname": "Wild Otter"
+    }
+  ]
+}

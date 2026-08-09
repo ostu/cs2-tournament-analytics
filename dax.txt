@@ -1,0 +1,39 @@
+_avgADR = AVERAGE(cs[adr])
+
+_avgKills = DIVIDE(SUM(cs[kills]),DISTINCTCOUNT(cs[mapId]))
+
+_KD = DIVIDE(SUM(cs[kills]),SUM(cs[deaths])) 
+
+_KR = DIVIDE(SUM(cs[kills]),SUM(cs[rounds])) 
+
+_tournamentEloDiff = [_startElo] + CALCULATE(SUM(cs[elo_diff]), cs[tMapIndex] <= MAX(cs[tMapIndex]))
+
+_result_and_map = CONCATENATE(CONCATENATE(FIRSTNONBLANK(cs2_team_score[result],1), UNICHAR(10)), FIRSTNONBLANK(cs2_team_score[map],1))
+
+_avgKills2 = DIVIDE(SUM(cs[kills]),DISTINCTCOUNT(cs[mapId]))
+
+_elo_diff = SUM(cs[elo_diff])
+
+_elo_diff% = DIVIDE([_elo_diff],SUM(tournaments[elo_calib]))
+
+_EloFinal = SUM(tournaments[elo_calib])+SUM(cs[elo_diff])
+
+_KD2 = DIVIDE(SUM(cs[kills]),SUM(cs[deaths]))
+
+_KR2 = DIVIDE(SUM(cs[kills]),SUM(cs[rounds]))
+
+_RemainingMatches = 6 - [_TeamMatches]
+
+_TeamLoses = 
+var x = CALCULATE(DISTINCTCOUNT(cs[matchId]),cs[w/l]="L")
+return if(ISBLANK(x),0,x)
+
+_TeamMatches = CALCULATE(DISTINCTCOUNT(cs[matchId]))
+
+_TeamsPP = DIVIDE(SUM(cs[PP]),5)
+
+_TeamWins = 
+var x = CALCULATE(DISTINCTCOUNT(cs[matchId]),cs[w/l]="W")
+return if(ISBLANK(x),0,x)
+
+_startElo = CALCULATE(SUM(tournaments[elo_start]),FILTER(tournaments,tournaments[Tournament] = MIN(tournaments[Tournament])))

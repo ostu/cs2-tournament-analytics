@@ -1,0 +1,293 @@
+{
+  "version": "1.0",
+  "generated_by": "docs/metric_catalog.md + docs/rating_semantics.md + docs/powerbi_logic_audit.md",
+  "player_metrics": [
+    {
+      "metric_id": "maps_played",
+      "display_name": "Сыграно карт",
+      "description": "Количество карт, сыгранных игроком (по каноническому ключу турнир+стадия+карта).",
+      "grain": "player",
+      "numerator": "COUNT(fact_player_map rows)",
+      "denominator": null,
+      "availability_rule": "always",
+      "format": "integer",
+      "legacy_equivalent": null,
+      "warning_text": null
+    },
+    {
+      "metric_id": "tournaments_played",
+      "display_name": "Турниров сыграно",
+      "description": "Количество основных турниров (стадия t), где у игрока есть карты.",
+      "grain": "player",
+      "numerator": "COUNT(DISTINCT tournament_number WHERE tournament_phase='t')",
+      "denominator": null,
+      "availability_rule": "always",
+      "format": "integer",
+      "legacy_equivalent": null,
+      "warning_text": "Калибровочные турниры (стадия c) не считаются отдельным турниром в этой метрике."
+    },
+    {
+      "metric_id": "kills", "display_name": "Убийства", "description": "Суммарные убийства.",
+      "grain": "player", "numerator": "SUM(kills)", "denominator": null,
+      "availability_rule": "always", "format": "integer", "legacy_equivalent": "cs[kills]", "warning_text": null
+    },
+    {
+      "metric_id": "assists", "display_name": "Помощи", "description": "Суммарные помощи.",
+      "grain": "player", "numerator": "SUM(assists)", "denominator": null,
+      "availability_rule": "always", "format": "integer", "legacy_equivalent": "cs[assists]", "warning_text": null
+    },
+    {
+      "metric_id": "deaths", "display_name": "Смерти", "description": "Суммарные смерти.",
+      "grain": "player", "numerator": "SUM(deaths)", "denominator": null,
+      "availability_rule": "always", "format": "integer", "legacy_equivalent": "cs[deaths]", "warning_text": null
+    },
+    {
+      "metric_id": "kd",
+      "display_name": "K/D",
+      "description": "Отношение убийств к смертям (сумма к сумме, не среднее по картам).",
+      "grain": "player",
+      "numerator": "SUM(kills)",
+      "denominator": "SUM(deaths)",
+      "availability_rule": "null_if_denominator_zero",
+      "format": "float_2dp",
+      "legacy_equivalent": "_KD = DIVIDE(SUM(cs[kills]),SUM(cs[deaths]))",
+      "warning_text": null
+    },
+    {
+      "metric_id": "kr",
+      "display_name": "K/R",
+      "description": "Убийств за раунд (сумма к сумме).",
+      "grain": "player",
+      "numerator": "SUM(kills)",
+      "denominator": "SUM(rounds_played)",
+      "availability_rule": "null_if_denominator_zero",
+      "format": "float_2dp",
+      "legacy_equivalent": "_KR = DIVIDE(SUM(cs[kills]),SUM(cs[rounds]))",
+      "warning_text": null
+    },
+    {
+      "metric_id": "average_kills_per_map",
+      "display_name": "Среднее убийств за карту",
+      "description": "SUM(kills) / канонически уникальные сыгранные карты (составной ключ турнир+стадия+номер карты), а не DISTINCTCOUNT(mapId), который сбрасывается по турнирам.",
+      "grain": "player",
+      "numerator": "SUM(kills)",
+      "denominator": "COUNT(DISTINCT (tournament_number, tournament_phase, map_number))",
+      "availability_rule": "null_if_denominator_zero",
+      "format": "float_1dp",
+      "legacy_equivalent": "_avgKills = _avgKills2 = DIVIDE(SUM(cs[kills]),DISTINCTCOUNT(cs[mapId]))",
+      "warning_text": "Легаси-формула Power BI занижает знаменатель при межтурнирном контексте (искажение до ~7х, см. docs/legacy_vs_canonical_results.md) — canonical-версия использует составной ключ."
+    },
+    {
+      "metric_id": "adr",
+      "display_name": "ADR",
+      "description": "Средний урон за раунд, только по картам, где ADR фактически трекался.",
+      "grain": "player",
+      "numerator": "SUM(adr WHERE adr_tracked)",
+      "denominator": "COUNT(maps WHERE adr_tracked)",
+      "availability_rule": "null_if_no_tracked_maps",
+      "format": "float_1dp",
+      "legacy_equivalent": "_avgADR = AVERAGE(cs[adr])",
+      "warning_text": "ADR не собирался в турнирах 1-5 (стадии a/c/t этих турниров) — такие карты не входят в среднее и не считаются нулевыми результатами."
+    },
+    {
+      "metric_id": "adr_coverage",
+      "display_name": "Покрытие ADR",
+      "description": "Доля сыгранных карт, где ADR был протрекован.",
+      "grain": "player",
+      "numerator": "COUNT(maps WHERE adr_tracked)",
+      "denominator": "COUNT(maps_played)",
+      "availability_rule": "null_if_denominator_zero",
+      "format": "percent_1dp",
+      "legacy_equivalent": null,
+      "warning_text": null
+    },
+    {
+      "metric_id": "mvps_total",
+      "display_name": "MVP",
+      "description": "Суммарное количество MVP-раундов по картам, где MVP фактически трекался.",
+      "grain": "player",
+      "numerator": "SUM(mvps WHERE mvp_tracked)",
+      "denominator": null,
+      "availability_rule": "null_if_no_tracked_maps",
+      "format": "integer",
+      "legacy_equivalent": null,
+      "warning_text": "MVP трекался в других турнирах, чем ADR (турниры 1-3 vs 6-7) — сравнение MVP между периодами с разным покрытием требует явного предупреждения в UI."
+    },
+    {
+      "metric_id": "mvp_coverage",
+      "display_name": "Покрытие MVP",
+      "description": "Доля сыгранных карт, где MVP был протрекован.",
+      "grain": "player",
+      "numerator": "COUNT(maps WHERE mvp_tracked)",
+      "denominator": "COUNT(maps_played)",
+      "availability_rule": "null_if_denominator_zero",
+      "format": "percent_1dp",
+      "legacy_equivalent": null,
+      "warning_text": null
+    },
+    {
+      "metric_id": "rating_start",
+      "display_name": "Elo на входе (Na)",
+      "description": "Нормализованный рейтинг на входе в турнир.",
+      "grain": "player x tournament",
+      "numerator": "fact_player_rating_event WHERE event_type='normalized_entry'",
+      "denominator": null, "availability_rule": "always", "format": "rating_integer",
+      "legacy_equivalent": "players.t{n}_elo_start", "warning_text": null
+    },
+    {
+      "metric_id": "rating_calibration",
+      "display_name": "Elo после калибровки (Nc)",
+      "description": "Рейтинг после блока калибровочных игр.",
+      "grain": "player x tournament",
+      "numerator": "fact_player_rating_event WHERE event_type='calibration_final'",
+      "denominator": null, "availability_rule": "always", "format": "rating_integer",
+      "legacy_equivalent": "players.t{n}_elo_calib", "warning_text": null
+    },
+    {
+      "metric_id": "rating_team_building",
+      "display_name": "Elo для формирования команд (Nn)",
+      "description": "Смешанный рейтинг после калибровки, используемый для драфта постоянных команд. Доступен только для турниров, где эта стадия зафиксирована в данных.",
+      "grain": "player x tournament",
+      "numerator": "fact_player_rating_event WHERE event_type='blended_normalized'",
+      "denominator": null, "availability_rule": "null_if_stage_absent", "format": "rating_integer",
+      "legacy_equivalent": null,
+      "warning_text": "Стадия Nn зафиксирована в данных только для турнира 7 — для остальных турниров показывать «нет данных», а не 0."
+    },
+    {
+      "metric_id": "rating_final",
+      "display_name": "Итоговый Elo (Nt)",
+      "description": "Итоговый рейтинг после основного турнира.",
+      "grain": "player x tournament",
+      "numerator": "fact_player_rating_event WHERE event_type='tournament_final'",
+      "denominator": null, "availability_rule": "always", "format": "rating_integer",
+      "legacy_equivalent": "_EloFinal = SUM(tournaments[elo_calib])+SUM(cs[elo_diff]) = players.t{n}_elo",
+      "warning_text": null
+    },
+    {
+      "metric_id": "rating_change",
+      "display_name": "Изменение Elo",
+      "description": "rating_final - rating_calibration за турнир.",
+      "grain": "player x tournament",
+      "numerator": "rating_final - rating_calibration", "denominator": null,
+      "availability_rule": "always", "format": "rating_integer_signed",
+      "legacy_equivalent": "_elo_diff = SUM(cs[elo_diff])", "warning_text": null
+    },
+    {
+      "metric_id": "rating_change_percent",
+      "display_name": "Изменение Elo, %",
+      "description": "rating_change / rating_calibration.",
+      "grain": "player x tournament",
+      "numerator": "rating_change", "denominator": "rating_calibration",
+      "availability_rule": "null_if_denominator_zero", "format": "percent_1dp",
+      "legacy_equivalent": "_elo_diff% = DIVIDE([_elo_diff],SUM(tournaments[elo_calib]))",
+      "warning_text": null
+    }
+  ],
+  "team_metrics": [
+    {
+      "metric_id": "team_maps_played", "display_name": "Сыграно карт", "description": "Количество карт команды.",
+      "grain": "team", "numerator": "COUNT(fact_team_map rows)", "denominator": null,
+      "availability_rule": "always", "format": "integer", "legacy_equivalent": null, "warning_text": null
+    },
+    {
+      "metric_id": "team_matches_played",
+      "display_name": "Сыграно матчей",
+      "description": "Количество уникальных матчей команды (в рамках одного турнира — match_id переиспользуется между турнирами).",
+      "grain": "team x tournament",
+      "numerator": "COUNT(DISTINCT match_id WHERE tournament_number=X)", "denominator": null,
+      "availability_rule": "requires_tournament_filter", "format": "integer",
+      "legacy_equivalent": "_TeamMatches = CALCULATE(DISTINCTCOUNT(cs[matchId]))",
+      "warning_text": "match_id сбрасывается по турнирам — метрика корректна только в пределах одного турнира."
+    },
+    {
+      "metric_id": "team_wins", "display_name": "Победы", "description": "Число выигранных карт.",
+      "grain": "team", "numerator": "COUNT(fact_team_map WHERE win_loss='W')", "denominator": null,
+      "availability_rule": "always", "format": "integer",
+      "legacy_equivalent": "_TeamWins", "warning_text": null
+    },
+    {
+      "metric_id": "team_losses", "display_name": "Поражения", "description": "Число проигранных карт.",
+      "grain": "team", "numerator": "COUNT(fact_team_map WHERE win_loss='L')", "denominator": null,
+      "availability_rule": "always", "format": "integer",
+      "legacy_equivalent": "_TeamLoses", "warning_text": null
+    },
+    {
+      "metric_id": "team_win_rate",
+      "display_name": "Win rate",
+      "description": "Доля выигранных карт.",
+      "grain": "team", "numerator": "team_wins", "denominator": "team_maps_played",
+      "availability_rule": "null_if_denominator_zero", "format": "percent_1dp",
+      "legacy_equivalent": null, "warning_text": null
+    },
+    {
+      "metric_id": "team_rounds_won", "display_name": "Раундов выиграно", "description": "Сумма team_score по картам с валидным счётом.",
+      "grain": "team", "numerator": "SUM(team_score WHERE result_parse_status='ok')", "denominator": null,
+      "availability_rule": "null_if_no_valid_score_maps", "format": "integer", "legacy_equivalent": null,
+      "warning_text": "Не включает карты с неразобранным счётом (см. result_parse_status)."
+    },
+    {
+      "metric_id": "team_rounds_lost", "display_name": "Раундов проиграно", "description": "Сумма opponent_score по картам с валидным счётом.",
+      "grain": "team", "numerator": "SUM(opponent_score WHERE result_parse_status='ok')", "denominator": null,
+      "availability_rule": "null_if_no_valid_score_maps", "format": "integer", "legacy_equivalent": null,
+      "warning_text": "Не включает карты с неразобранным счётом."
+    },
+    {
+      "metric_id": "team_round_diff",
+      "display_name": "Раундовый дифференциал",
+      "description": "SUM(round_diff) напрямую на грейне команда×карта — без денормализации на игроков и без деления на 5.",
+      "grain": "team",
+      "numerator": "SUM(fact_team_map.round_diff WHERE result_parse_status='ok')", "denominator": null,
+      "availability_rule": "null_if_no_valid_score_maps", "format": "integer_signed",
+      "legacy_equivalent": "_TeamsPP = DIVIDE(SUM(cs[PP]),5)",
+      "warning_text": "Легаси-формула делит на фиксированные 5 игроков и ломается при неполном составе (5 из 448 карт) — canonical-версия считает round_diff один раз на карту."
+    },
+    {
+      "metric_id": "team_rating_start", "display_name": "Elo на входе (Na)", "description": "Средний Na состава турнира.",
+      "grain": "team x tournament", "numerator": "AVERAGE(player rating_start состава)", "denominator": null,
+      "availability_rule": "requires_roster_definition", "format": "rating_integer",
+      "legacy_equivalent": null,
+      "warning_text": "Способ агрегации Elo по составу (среднее) не подтверждён ни в notebook, ни в DAX — предположение для витрины, не легаси-формула."
+    },
+    {
+      "metric_id": "team_rating_final", "display_name": "Итоговый Elo (Nt)", "description": "Средний Nt состава турнира.",
+      "grain": "team x tournament", "numerator": "AVERAGE(player rating_final состава)", "denominator": null,
+      "availability_rule": "requires_roster_definition", "format": "rating_integer",
+      "legacy_equivalent": null,
+      "warning_text": "Способ агрегации не подтверждён — см. team_rating_start."
+    },
+    {
+      "metric_id": "team_rating_change", "display_name": "Изменение Elo", "description": "team_rating_final - team_rating_start.",
+      "grain": "team x tournament", "numerator": "team_rating_final - team_rating_start", "denominator": null,
+      "availability_rule": "requires_roster_definition", "format": "rating_integer_signed",
+      "legacy_equivalent": null, "warning_text": null
+    },
+    {
+      "metric_id": "team_rating_change_percent", "display_name": "Изменение Elo, %", "description": "team_rating_change / team_rating_start.",
+      "grain": "team x tournament", "numerator": "team_rating_change", "denominator": "team_rating_start",
+      "availability_rule": "null_if_denominator_zero", "format": "percent_1dp",
+      "legacy_equivalent": null, "warning_text": null
+    },
+    {
+      "metric_id": "tournament_place",
+      "display_name": "Место на турнире",
+      "description": "Итоговое место команды на турнире.",
+      "grain": "team x tournament",
+      "numerator": "tournament_score.place", "denominator": null,
+      "availability_rule": "null_if_team_alias_unresolved", "format": "integer",
+      "legacy_equivalent": "tournament_score[place]",
+      "warning_text": "Не определено для команд, чьё название ожидает подтверждения alias (review_status=needs_review)."
+    }
+  ],
+  "not_implemented": [
+    {
+      "metric_id": "remaining_matches",
+      "reason": "Легаси-формула '6 - TeamMatches' не подтверждается ни на одном турнире (реально 1-16 матчей на команду). Нет источника плановой сетки турнира.",
+      "decision": "Не переносится в каноническую модель и публичный дашборд (см. docs/unresolved_questions.md §2.1)."
+    },
+    {
+      "metric_id": "player_rank",
+      "reason": "Ни в notebook, ни в dax.txt не найдено RANKX-подобной меры для ранжирования игроков/команд.",
+      "decision": "В HTML — сортировка таблицы по подтверждённому полю (rating_final), без отдельного поля 'ранг'."
+    }
+  ]
+}

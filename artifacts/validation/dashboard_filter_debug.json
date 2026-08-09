@@ -1,0 +1,122 @@
+{
+  "generated_by": "manual diagnosis, Audit v3 bugfix cycle — see docs/dashboard_bugfix_v1.md",
+  "pipeline_run": "python pipeline/run_pipeline.ps1 -Clean -SkipAudit (2025 bugfix session)",
+  "findings": [
+    {
+      "issue_id": 1,
+      "symptom": "график «Рейтинг команд (Elo, всё время)» пустой",
+      "dataset": "data/public/teams.json (→ mart_team_summary.parquet)",
+      "renderer": "app.js::renderTeamRatingChart() → teamAllTimeRows().filter(r => r.rating_final !== null)",
+      "rows_in_mart": 141,
+      "rows_all_time_in_mart": 66,
+      "rows_all_time_with_non_null_rating_final_in_mart": 0,
+      "rows_in_public_json": 141,
+      "rows_all_time_with_non_null_rating_final_in_public_json": 0,
+      "rows_after_frontend_filter": 0,
+      "expected_fields": ["team_id", "tournament_number", "rating_final"],
+      "actual_fields_present": ["team_id", "tournament_number", "rating_final", "..."],
+      "field_name_mismatch": false,
+      "type_mismatch_tournament_number": false,
+      "string_vs_number_comparison": false,
+      "filter_on_missing_field": false,
+      "root_cause": "pipeline/build_marts.py::_team_rating_component() строит агрегат по ключу (team_key, tournament_number) с реальными номерами турниров (1..7). Для all-time строки (tournament_number=None) build_mart_team_summary ищет 'start_component[(...) & (start_component[\"tournament_number\"] == tournament_number)]' с tournament_number=None. Сравнение int-колонки pandas с None через '==' даёт False для ВСЕХ строк (а не NaN-семантику) → rs_row/rf_row всегда пустые → rating_start/rating_final = None на 100% all-time строк (66 из 66). Ни одна строка не проходит фронтенд-фильтр 'rating_final !== null', поэтому график остаётся пустым при ЛЮБЫХ валидных данных ниже по цепочке.",
+      "additional_defect": "Формула all-time агрегата вообще не специфицирована как 'последнее значение' — код пытался присвоить именно turnир-специфичный agg турниру None, что структурно не может сработать ни при каком состоянии данных."
+    },
+    {
+      "issue_id": 2,
+      "symptom": "график «Калибровочный (Nc) vs итоговый (Nt) рейтинг команд» пустой",
+      "dataset": "data/public/teams.json (→ mart_team_summary.parquet)",
+      "renderer": "app.js::renderCalibFinalChart() → teamAllTimeRows().filter(r => r.rating_start !== null && r.rating_final !== null)",
+      "rows_in_mart": 141,
+      "rows_all_time_in_mart": 66,
+      "rows_all_time_with_non_null_rating_start_and_final": 0,
+      "rows_after_frontend_filter": 0,
+      "root_cause": "Тот же корневой дефект, что issue #1 (tournament_number=None никогда не матчится в _team_rating_component).",
+      "additional_defect_1": "Поле 'rating_start' в mart_team_summary фактически строится через event_type='normalized_entry' (стадия Na), а НЕ 'calibration_final' (стадия Nc) — заголовок карточки в HTML обещает 'Nc', а реально показывался бы (если бы не был пуст) Na. Название/легенда графика расходятся с содержимым.",
+      "additional_defect_2": "Формула строилась как СРЕДНЕЕ по составу (AVERAGE), а не сумма (SUM), которую явно требует продукт для этого сравнения.",
+      "additional_defect_3": "Roster для all-time агрегата не привязан к конкретному турниру — состав разных турниров потенциально смешивается, если бы сравнение вообще считалось."
+    },
+    {
+      "issue_id": 3,
+      "symptom": "фильтр турнира не ограничивает список команд",
+      "component": "app.js::initFilterBar()",
+      "root_cause": "Список <option> в #filter-team заполняется ОДИН РАЗ при инициализации из статического DATA.metadata.teams (глобальный список всех 69 команд без привязки к турниру). Обработчик change для #filter-tournament только выставляет state.tournament и вызывает renderCurrentTab() — он НЕ трогает содержимое #filter-team. Каскадной логики 'турнир → команды' не существует в коде вообще.",
+      "filter_on_missing_field": false,
+      "field_name_mismatch": false
+    },
+    {
+      "issue_id": 4,
+      "symptom": "фильтр команды не ограничивает список игроков",
+      "component": "app.js::initFilterBar()",
+      "root_cause": "Аналогично issue #3: #filter-player заполняется один раз из DATA.metadata.players (глобальный список 84 псевдонимов). Обработчик change для #filter-team не пересобирает #filter-player. Каскадной логики 'команда → игроки' не существует.",
+      "filter_on_missing_field": false
+    },
+    {
+      "issue_id": 5,
+      "symptom": "калибровочные временные команды попадают в фильтр команд и в командные marts",
+      "dataset": "data/processed/dim_team.parquet, mart_team_summary.parquet, mart_team_map_matrix.parquet, data/public/teams.json, team_map_matrix.json, metadata.json",
+      "evidence": {
+        "total_teams_in_dim_team": 69,
+        "teams_exclusively_in_tournament_phase_c": 26,
+        "teams_exclusively_in_tournament_phase_t": 40,
+        "teams_in_both_phases": 0,
+        "teams_absent_from_fact_player_map_but_present_in_tournament_score_or_players_wide": 3,
+        "calibration_like_team_ids_in_teams_json": 26,
+        "calibration_like_team_ids_in_team_map_matrix_json": 26,
+        "calibration_like_team_names_in_metadata_teams_filter_dropdown": 26,
+        "example_calibration_team_names": ["Команда 1", "Команда 2-1", "Team 1", "Team 2"]
+      },
+      "root_cause": "Ни одна dimension/mart не содержит поле team_type/is_calibration_team. dim_team строится как ПРОСТОЕ объединение canonical_team_name из tournament_results (обе стадии c и t) и tournament_score — календарные (одноразовые) калибровочные составы включаются в модель на равных с постоянными турнирными командами. Сигнал для разделения (эксклюзивное присутствие только в phase='c' против только в phase='t', 0% перекрытия) в данных есть и однозначен, но не был использован."
+    },
+    {
+      "issue_id": 6,
+      "symptom": "фильтры турнира и команды переключаются, но почти не влияют на таблицы и графики",
+      "sub_findings": [
+        {
+          "component": "renderPlayers() (таблица игроков)",
+          "root_cause": "Фильтрация идёт по 'p.latest_tournament !== state.tournament' и 'p.latest_team !== state.team' — оба поля отражают ТОЛЬКО самое последнее участие игрока за всё время, а не факт участия в выбранном турнире/команде. При выборе турнира, который не является для игрока абсолютно последним, игрок исчезает из таблицы целиком, даже если реально играл в этом турнире — таблица выглядит почти пустой/неизменной для большинства фильтров."
+        },
+        {
+          "component": "renderHeatmap() / Team×Map",
+          "root_cause": "data/public/team_map_matrix.json — агрегат по ВСЕМ турнирам сразу (grain: team×map, без tournament_number). state.tournament используется только в renderOverview()/renderTeams()/renderPlayers(), но НЕ в renderHeatmap() — фильтр турнира не имеет узла приложения к этому датасету, поэтому визуально переключается, но не может ни на что влиять на этой вкладке."
+        },
+        {
+          "component": "renderTeams() (таблица команд)",
+          "note": "Здесь фильтр турнира частично работает (mart_team_summary содержит настоящие per-tournament строки с валидным rating_final — 75 строк, 0 null), но в выборку попадают вперемешку калибровочные и постоянные команды (issue #5), что искажает видимый эффект фильтра."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "primary_root_causes": [
+      "1) build_mart_team_summary(): all-time агрегат (tournament_number=None) пытается искать per-tournament rating-компоненты по несуществующему None-ключу — 100% null.",
+      "2) Нет разделения calibration_team / permanent_tournament_team ни в одной dimension/mart, хотя сигнал в данных однозначен (0% перекрытия phase c/t).",
+      "3) Нет каскадной логики фильтров tournament→team→player во frontend — списки опций статичны.",
+      "4) Players-таблица фильтруется по полям 'latest_*', а не по факту участия в выбранном турнире/команде.",
+      "5) Team×Map heatmap не имеет доступа к turnир-гранулярным данным вообще.",
+      "6) Карточка 'Nc vs Nt' фактически использовала Na, не Nc, и AVERAGE вместо требуемого SUM."
+    ]
+  },
+  "resolution": {
+    "status": "fixed_and_verified",
+    "verified_via": "node-based headless DOM harness (см. описание в финальном отчёте сессии) + artifacts/validation/validation.json (62 проверки, 0 critical) + tests/test_team_classification.py",
+    "fixes": [
+      {
+        "issue_ids": [1, 2],
+        "change": "pipeline/build_dimensions.py: dim_team.team_type (permanent_tournament_team/calibration_team/unknown) по сигналу tournament_phase. pipeline/build_marts.py: resolve_final_roster() + team_roster_rating_sum() — SUM (не AVERAGE) по финальному составу турнира; all-time строка mart_team_summary теперь копирует latest per-tournament строку (не пересчитывает None-ключ); новый mart_team_rating_comparison.parquet (team_nc/team_nt, null при неполном покрытии, не 0).",
+        "verified": "chart-team-rating: 12 точек без фильтра (было 0). chart-calib-final: 7 точек, заголовок 'показан последний доступный турнир: 7' (было 0 точек, заголовок статичный)."
+      },
+      {
+        "issue_ids": [5],
+        "change": "26 из 69 команд классифицированы calibration_team и исключены из dim_team-производных marts/public json/metadata.teams/teams_by_tournament. Player-level calibration_game/calibration_final события НЕ удалены (590/230 событий подтверждены в validate_pipeline.py).",
+        "verified": "artifacts/validation/validation.json: no_calibration_team_in_public/* — все PASS."
+      },
+      {
+        "issue_ids": [3, 4, 6],
+        "change": "dashboard/js/app.js: rebuildTeamOptions()/rebuildPlayerOptions() пересобирают <option> по dashboardState.tournament/team (metadata.teams_by_tournament + участие в player_maps); сброс невалидных team/player при смене вышестоящего фильтра; renderPlayers() считает статистику по фактическому участию (computePlayerRowForContext), не по latest_*; renderHeatmap() агрегирует team_maps.json на лету с учётом dashboardState.tournament.",
+        "verified": "headless-прогон: после tournament=1 список команд сузился до 7 (не 69), список игроков — до 35; после выбора команды из этого списка список игроков сузился до 5; переключение на турнир без этой команды автоматически сбросило team на ''. heatmap после tournament=3 показал ровно 4 команды (реальный состав турнира 3)."
+      }
+    ],
+    "known_limitation": "Полный клик-тест в реальном браузере не проводился (нет browser-tooling в этой сессии) — проверка выполнена через headless Node-харнесс с упрощённой DOM-заглушкой (createElement/getElementById/change-события) и статическим/JSON-анализом; рекомендуется ручная проверка в браузере перед публикацией."
+  }
+}

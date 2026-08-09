@@ -1,0 +1,11 @@
+{
+  "low_sample_threshold": 3,
+  "report_title": "CS2 Tournament Report",
+  "locale": "ru-RU",
+  "number_format": {
+    "rating": { "decimals": 0 },
+    "percent": { "decimals": 1 },
+    "ratio": { "decimals": 2 },
+    "average": { "decimals": 1 }
+  }
+}

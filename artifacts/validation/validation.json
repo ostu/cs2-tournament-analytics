@@ -1,0 +1,470 @@
+[
+  {
+    "name": "source_integrity",
+    "severity": "critical",
+    "passed": true,
+    "detail": "cs_farpost_elo_changes.xlsx: совпадает"
+  },
+  {
+    "name": "source_integrity",
+    "severity": "critical",
+    "passed": true,
+    "detail": "cs_farpost_elo_norm.xlsx: совпадает"
+  },
+  {
+    "name": "source_integrity",
+    "severity": "critical",
+    "passed": true,
+    "detail": "cs_farpost_players.xlsx: совпадает"
+  },
+  {
+    "name": "source_integrity",
+    "severity": "critical",
+    "passed": true,
+    "detail": "cs_farpost_tournament_results.xlsx: совпадает"
+  },
+  {
+    "name": "source_integrity",
+    "severity": "critical",
+    "passed": true,
+    "detail": "cs_farpost_tournament_score.xlsx: совпадает"
+  },
+  {
+    "name": "dimension_key_unique:dim_tournament",
+    "severity": "critical",
+    "passed": true,
+    "detail": "дублей по ['tournament_number']: 0"
+  },
+  {
+    "name": "dimension_key_unique:dim_team",
+    "severity": "critical",
+    "passed": true,
+    "detail": "дублей по ['team_key']: 0"
+  },
+  {
+    "name": "dimension_key_unique:dim_map",
+    "severity": "critical",
+    "passed": true,
+    "detail": "дублей по ['map_key']: 0"
+  },
+  {
+    "name": "dimension_key_unique:dim_player_public",
+    "severity": "critical",
+    "passed": true,
+    "detail": "дублей по ['public_player_id']: 0"
+  },
+  {
+    "name": "fact_grain_unique:fact_player_map",
+    "severity": "critical",
+    "passed": true,
+    "detail": "дублей по гранулярному ключу ['private_player_key', 'tournament_number', 'tournament_phase', 'map_number']: 0"
+  },
+  {
+    "name": "fact_grain_unique:fact_team_map",
+    "severity": "critical",
+    "passed": true,
+    "detail": "дублей по гранулярному ключу ['tournament_number', 'tournament_phase', 'map_number', 'team_key']: 0"
+  },
+  {
+    "name": "fact_grain_unique:fact_player_rating_event",
+    "severity": "critical",
+    "passed": true,
+    "detail": "дублей по гранулярному ключу ['private_player_key', 'tournament_number', 'rating_stage', 'event_type', 'event_sequence']: 0"
+  },
+  {
+    "name": "no_unexpected_many_to_many:team_per_map",
+    "severity": "warning",
+    "passed": true,
+    "detail": "карт с числом команд != 2: 0 из 224"
+  },
+  {
+    "name": "na_sum_invariant",
+    "severity": "info",
+    "passed": true,
+    "detail": "турнир 1: Na сумма 35000.0 vs целевая 35000"
+  },
+  {
+    "name": "na_sum_invariant",
+    "severity": "info",
+    "passed": true,
+    "detail": "турнир 2: Na сумма 47000.0 vs целевая 47000"
+  },
+  {
+    "name": "na_sum_invariant",
+    "severity": "info",
+    "passed": true,
+    "detail": "турнир 3: Na сумма 20000.0 vs целевая 20000"
+  },
+  {
+    "name": "na_sum_invariant",
+    "severity": "info",
+    "passed": true,
+    "detail": "турнир 4: Na сумма 27000.0 vs целевая 27000"
+  },
+  {
+    "name": "na_sum_invariant",
+    "severity": "info",
+    "passed": true,
+    "detail": "турнир 5: Na сумма 25000.0 vs целевая 25000"
+  },
+  {
+    "name": "na_sum_invariant",
+    "severity": "info",
+    "passed": true,
+    "detail": "турнир 6: Na сумма 40000.0 vs целевая 40000"
+  },
+  {
+    "name": "na_sum_invariant",
+    "severity": "info",
+    "passed": true,
+    "detail": "турнир 7: Na сумма 36000.0 vs целевая 36000"
+  },
+  {
+    "name": "nn_sum_invariant",
+    "severity": "info",
+    "passed": true,
+    "detail": "турнир 7: Nn сумма 36000.0 vs целевая 36000"
+  },
+  {
+    "name": "rating_after_equals_before_plus_change",
+    "severity": "critical",
+    "passed": true,
+    "detail": "несоответствий: 0 из 2875"
+  },
+  {
+    "name": "known_final_reconstruction_mismatches",
+    "severity": "warning",
+    "passed": true,
+    "detail": "известных расхождений calibration_final/tournament_final с реконструкцией по картам: 35 (ожидаемо для турнира 7, см. docs/rating_semantics.md §3)"
+  },
+  {
+    "name": "mapid_offset_join_coverage",
+    "severity": "critical",
+    "passed": true,
+    "detail": "coverage=99.9553%, порог=99.50%"
+  },
+  {
+    "name": "kills_nonnegative",
+    "severity": "warning",
+    "passed": false,
+    "detail": "строк с kills<0: 1 (см. data_quality_flags=negative_stat_value_in_raw_source)"
+  },
+  {
+    "name": "deaths_nonnegative",
+    "severity": "critical",
+    "passed": true,
+    "detail": "строк с deaths<0: 0"
+  },
+  {
+    "name": "rounds_positive",
+    "severity": "warning",
+    "passed": true,
+    "detail": "строк с rounds_played<=0: 0"
+  },
+  {
+    "name": "kd_no_infinite",
+    "severity": "critical",
+    "passed": true,
+    "detail": "строк с deaths=0 (KD не определён, обрабатывается как null): 0"
+  },
+  {
+    "name": "adr_null_when_not_tracked",
+    "severity": "critical",
+    "passed": true,
+    "detail": "строк с adr_tracked=false, но adr не null: 0"
+  },
+  {
+    "name": "mvp_tracked_consistent_per_tournament",
+    "severity": "warning",
+    "passed": true,
+    "detail": "турниров/стадий с неоднородным mvp_tracked внутри себя: 0"
+  },
+  {
+    "name": "team_map_two_sided_complete",
+    "severity": "warning",
+    "passed": true,
+    "detail": "224/224 карт с ровно 2 командами"
+  },
+  {
+    "name": "team_map_mirror_reconciliation",
+    "severity": "critical",
+    "passed": true,
+    "detail": "зеркальность (W/L противоположны, same match, round_diff зеркален, opponent корректен): 224/224"
+  },
+  {
+    "name": "team_type_values_valid",
+    "severity": "critical",
+    "passed": true,
+    "detail": "все team_type — из допустимого набора"
+  },
+  {
+    "name": "team_type_no_unresolved_unknown",
+    "severity": "warning",
+    "passed": true,
+    "detail": "команд с team_type=unknown (не публикуются в team dashboards до подтверждения): 0"
+  },
+  {
+    "name": "team_type_no_overlap",
+    "severity": "critical",
+    "passed": true,
+    "detail": "команд одновременно в permanent и calibration: 0"
+  },
+  {
+    "name": "no_calibration_team_in_public:teams.json",
+    "severity": "critical",
+    "passed": true,
+    "detail": "teams.json: калибровочных команд нет"
+  },
+  {
+    "name": "no_calibration_team_in_public:team_maps.json",
+    "severity": "critical",
+    "passed": true,
+    "detail": "team_maps.json: калибровочных команд нет"
+  },
+  {
+    "name": "no_calibration_team_in_public:team_map_matrix.json",
+    "severity": "critical",
+    "passed": true,
+    "detail": "team_map_matrix.json: калибровочных команд нет"
+  },
+  {
+    "name": "no_calibration_team_in_public:team_rating_history.json",
+    "severity": "critical",
+    "passed": true,
+    "detail": "team_rating_history.json: калибровочных команд нет"
+  },
+  {
+    "name": "no_calibration_team_in_public:team_rating_comparison.json",
+    "severity": "critical",
+    "passed": true,
+    "detail": "team_rating_comparison.json: калибровочных команд нет"
+  },
+  {
+    "name": "no_calibration_team_in_filter_dropdown",
+    "severity": "critical",
+    "passed": true,
+    "detail": "фильтр команд не содержит calibration_team"
+  },
+  {
+    "name": "no_calibration_team_in_teams_by_tournament",
+    "severity": "critical",
+    "passed": true,
+    "detail": "ни один турнир в teams_by_tournament не содержит calibration_team"
+  },
+  {
+    "name": "calibration_rating_events_preserved",
+    "severity": "critical",
+    "passed": true,
+    "detail": "calibration_game=590, calibration_final=230 (должны быть > 0)"
+  },
+  {
+    "name": "team_rating_final_not_all_null_all_time",
+    "severity": "critical",
+    "passed": true,
+    "detail": "all-time строк с валидным rating_final: 40 из 40 (при 43 постоянных командах)"
+  },
+  {
+    "name": "team_rating_final_not_all_null_per_tournament",
+    "severity": "critical",
+    "passed": true,
+    "detail": "per-tournament строк с валидным rating_final: 43 из 43"
+  },
+  {
+    "name": "team_rating_comparison_not_all_null",
+    "severity": "critical",
+    "passed": true,
+    "detail": "строк с валидными team_nc и team_nt: 43 из 43"
+  },
+  {
+    "name": "privacy_leak_check",
+    "severity": "critical",
+    "passed": true,
+    "detail": "public: чисто"
+  },
+  {
+    "name": "privacy_leak_check",
+    "severity": "critical",
+    "passed": true,
+    "detail": "dashboard.html: чисто"
+  },
+  {
+    "name": "no_private_mapping_file_in_public",
+    "severity": "critical",
+    "passed": true,
+    "detail": "файлов player_aliases* в data/public/: 0"
+  },
+  {
+    "name": "no_private_player_key_field:metadata.json",
+    "severity": "critical",
+    "passed": true,
+    "detail": "поле private_player_key отсутствует"
+  },
+  {
+    "name": "no_private_player_key_field:players.json",
+    "severity": "critical",
+    "passed": true,
+    "detail": "поле private_player_key отсутствует"
+  },
+  {
+    "name": "no_private_player_key_field:player_maps.json",
+    "severity": "critical",
+    "passed": true,
+    "detail": "поле private_player_key отсутствует"
+  },
+  {
+    "name": "no_private_player_key_field:player_rating_history.json",
+    "severity": "critical",
+    "passed": true,
+    "detail": "поле private_player_key отсутствует"
+  },
+  {
+    "name": "no_private_player_key_field:teams.json",
+    "severity": "critical",
+    "passed": true,
+    "detail": "поле private_player_key отсутствует"
+  },
+  {
+    "name": "no_private_player_key_field:team_maps.json",
+    "severity": "critical",
+    "passed": true,
+    "detail": "поле private_player_key отсутствует"
+  },
+  {
+    "name": "no_private_player_key_field:team_map_matrix.json",
+    "severity": "critical",
+    "passed": true,
+    "detail": "поле private_player_key отсутствует"
+  },
+  {
+    "name": "no_private_player_key_field:team_rating_comparison.json",
+    "severity": "critical",
+    "passed": true,
+    "detail": "поле private_player_key отсутствует"
+  },
+  {
+    "name": "no_private_player_key_field:team_rating_history.json",
+    "severity": "critical",
+    "passed": true,
+    "detail": "поле private_player_key отсутствует"
+  },
+  {
+    "name": "dashboard_exists",
+    "severity": "critical",
+    "passed": true,
+    "detail": "dashboard.html существует, размер 3651 КБ"
+  },
+  {
+    "name": "dashboard_required_sections",
+    "severity": "critical",
+    "passed": true,
+    "detail": "все обязательные секции присутствуют"
+  },
+  {
+    "name": "dashboard_embedded_json_valid",
+    "severity": "critical",
+    "passed": true,
+    "detail": "embedded JSON валиден, все ключи присутствуют"
+  },
+  {
+    "name": "dashboard_no_missing_local_assets",
+    "severity": "critical",
+    "passed": true,
+    "detail": "нет ссылок на отсутствующие локальные файлы (все ассеты инлайнены или через CDN)"
+  },
+  {
+    "name": "overview_removed_components_absent",
+    "severity": "critical",
+    "passed": true,
+    "detail": "удалённые Overview-компоненты (рейтинг команд, 3 графика игроков) отсутствуют"
+  },
+  {
+    "name": "overview_calib_final_container_present",
+    "severity": "critical",
+    "passed": true,
+    "detail": "контейнер #chart-calib-final для Nc vs Nt найден"
+  },
+  {
+    "name": "overview_calib_final_is_first_chart",
+    "severity": "warning",
+    "passed": true,
+    "detail": "Nc vs Nt расположен раньше остальных Overview-графиков в разметке"
+  },
+  {
+    "name": "players_table_no_adr_coverage_column",
+    "severity": "critical",
+    "passed": true,
+    "detail": "PLAYER_COLUMNS не содержит видимую колонку 'Покрытие ADR'"
+  },
+  {
+    "name": "players_table_adr_column_present",
+    "severity": "critical",
+    "passed": true,
+    "detail": "колонка ADR присутствует"
+  },
+  {
+    "name": "player_cta_present",
+    "severity": "warning",
+    "passed": true,
+    "detail": "CTA выбора игрока найден"
+  },
+  {
+    "name": "rating_stage_legend_present",
+    "severity": "warning",
+    "passed": true,
+    "detail": "легенда стадий A/C/N/T найдена"
+  },
+  {
+    "name": "rating_history_map_name_present",
+    "severity": "warning",
+    "passed": true,
+    "detail": "map_name заполнен для 2234/2234 карточных рейтинговых событий"
+  },
+  {
+    "name": "calib_final_chart_source_rows_present",
+    "severity": "critical",
+    "passed": true,
+    "detail": "mart_team_rating_comparison: 43 строк"
+  },
+  {
+    "name": "about_section_reader_friendly",
+    "severity": "warning",
+    "passed": true,
+    "detail": "блок 'О данных' не содержит технических терминов"
+  },
+  {
+    "name": "about_section_mentions_pseudonyms_and_stages",
+    "severity": "warning",
+    "passed": true,
+    "detail": "упоминает псевдонимы и стадии рейтинга A/C/N/T"
+  },
+  {
+    "name": "roster_anomalies_report_exists",
+    "severity": "warning",
+    "passed": true,
+    "detail": "team_roster_anomalies.json/.md созданы"
+  },
+  {
+    "name": "roster_anomalies_size_4_or_6_captured",
+    "severity": "warning",
+    "passed": true,
+    "detail": "аномалий всего: 12, из них roster_size 4 или 6: 9"
+  },
+  {
+    "name": "roster_anomalies_causes_from_taxonomy",
+    "severity": "warning",
+    "passed": true,
+    "detail": "все причины — из согласованной таксономии"
+  },
+  {
+    "name": "roster_size_not_five_flag_present",
+    "severity": "warning",
+    "passed": true,
+    "detail": "строк mart_team_summary с флагом roster_size_not_five: 12"
+  },
+  {
+    "name": "roster_anomalies_are_warning_not_critical",
+    "severity": "warning",
+    "passed": true,
+    "detail": "12 аномалий(и) состава зафиксировано как warning, сборка не заблокирована"
+  }
+]
