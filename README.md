@@ -6,7 +6,7 @@
 
 **Live dashboard:** [q-stat.ru/reports/cs2-tournament](https://q-stat.ru/reports/cs2-tournament/) (interface in Russian, as its audience is local) · **Data model:** [docs/data_model.md](docs/data_model.md) · **Legacy vs. canonical:** [docs/legacy_vs_canonical_results.md](docs/legacy_vs_canonical_results.md)
 
-I designed the rating methodology and built the analytics for a series of amateur Counter-Strike 2 tournaments: seven tournaments, 84 players, 43 permanent teams, 224 played maps. The first version was a spreadsheet, two hand-run notebooks and a Power BI file, and a number in it could not be checked without opening the report. This repository is my rebuild of that system as one Python pipeline whose every stage can be inspected: source normalization, dimension/fact/mart tables in Parquet, metric formulas in a versioned config, validation checks, a privacy gate, and a single-file HTML dashboard.
+I designed the rating methodology and built the analytics for a series of amateur Counter-Strike 2 tournaments held from 2022 to 2026: seven tournaments, 84 players, 43 permanent teams, 224 played maps. The first version was a spreadsheet, two hand-run notebooks and a Power BI file, and a number in it could not be checked without opening the report. This repository is my rebuild of that system as one Python pipeline whose every stage can be inspected: source normalization, dimension/fact/mart tables in Parquet, metric formulas in a versioned config, validation checks, a privacy gate, and a single-file HTML dashboard.
 
 The subject is esports. The work is analytics engineering applied to a system of my own: designing a rating methodology, then auditing my earlier BI implementation of it, choosing grains and keys, proving that the new numbers are right, and publishing them without exposing the people behind them.
 
@@ -17,7 +17,7 @@ The subject is esports. The work is analytics engineering applied to a system of
 | **Reproducible pipeline** | Eight Python stages turn five source tables into 5 dimensions, 3 fact tables and 8 marts. The published dashboard rebuilds byte-for-byte from the public data in this repository |
 | **Canonical data model** | Explicit grain and key for every table; composite keys replace source ids that reset per tournament |
 | **Own legacy logic audited** | Every Power Query step and DAX measure of my earlier Power BI report was traced to its source. Of six audited measure groups, three matched the legacy numbers exactly and three were deliberately replaced because the legacy formula was provably wrong ([details](#legacy-reconciliation)) |
-| **Custom rating methodology** | A multi-stage, Elo-style rating that I designed and tuned over seven tournaments ([details](#the-rating-methodology)) |
+| **Custom rating methodology** | A multi-stage, Elo-style rating that I designed and tuned over seven tournaments, 2022 to 2026 ([details](#the-rating-methodology)) |
 | **Rating modelled as events** | More than 3,000 rating events across a four-stage cycle, instead of one "current rating" column per player |
 | **Automated checks** | 78 structural and statistical validation checks (0 critical failures, 1 documented warning on the last full run) and 68 pytest tests |
 | **Pseudonymized publication** | Players appear only under random pseudonyms; a leak scanner blocks the build if a known real identifier reaches the output |
@@ -45,7 +45,7 @@ All screenshots were taken from the production site on 22 November 2026 and are 
 
 ## How the project evolved
 
-This is one system, built by one person, in three steps:
+This is one system, built by one person over several years (the tournaments ran from 2022 to 2026), in three steps:
 
 1. **Methodology and data.** I designed the rating rules for the tournaments and kept the source tables in Google Sheets.
 2. **First analytics system.** I wrote the Google Colab notebooks that compute the rating and built the Power BI report on top of them, with the joins in Power Query and the metrics in DAX. The methodology was adjusted between tournaments as results came in. All of this was done by hand, without AI tools.
@@ -276,7 +276,7 @@ The figures of 68 passing tests and 78 checks come from the last full run with p
 
 ## My role
 
-I independently designed and developed the entire analytics system, from the original spreadsheets and Google Colab notebooks to the Power BI report and the current Python pipeline.
+This is a multi-year project. Between 2022 and 2026 I independently designed and developed the entire analytics system, from the original spreadsheets and Google Colab notebooks to the Power BI report and the current Python pipeline.
 
 I also developed the custom multi-stage, Elo-style rating methodology, tuning it iteratively against historical tournament data and evaluating its behaviour as new tournaments were played.
 
