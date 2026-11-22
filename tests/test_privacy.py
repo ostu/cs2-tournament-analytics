@@ -16,6 +16,11 @@ FORBIDDEN_KEYS = {
     "another_names",
 }
 
+# Список запрещённых токенов строится из data/raw/ и data/private/, которых нет
+# в публичном репозитории. Скан с пустым списком ничего не доказывает, поэтому
+# такие тесты пропускаются (skip), а не проходят "вхолостую".
+NO_TOKENS_REASON = "нет data/raw/ и data/private/ — список известных идентификаторов пуст, скан был бы пустым"
+
 
 class TestLeakDetectionMechanism:
     def test_self_test_passes(self):
@@ -87,6 +92,8 @@ class TestPublicPrivateSeparation:
 
     def test_public_data_passes_leak_check(self):
         tokens = collect_forbidden_tokens()
+        if not tokens:
+            pytest.skip(NO_TOKENS_REASON)
         findings = scan_build_dir(PUBLIC_DIR, tokens)
         assert findings == [], f"утечки в data/public/: {findings[:5]}"
 
@@ -96,9 +103,10 @@ class TestDashboardPrivacy:
     def test_dashboard_passes_leak_check(self):
         # scan_build_dir (не наивный substring-поиск) — учитывает, что
         # dashboard.html инлайнит статический код dashboard/js/app.js и
-        # dashboard/css/styles.css, в котором короткие реальные id (напр.
-        # 'max') могут случайно совпасть с обычными словами кода
-        # (Math.max, max-width) — см. check_publication_leaks.load_known_static_assets.
+        # dashboard/css/styles.css, в котором короткие реальные id могут
+        # случайно совпасть с обычными словами кода — см. check_publication_leaks.load_known_static_assets.
         tokens = collect_forbidden_tokens()
+        if not tokens:
+            pytest.skip(NO_TOKENS_REASON)
         findings = scan_build_dir(DASHBOARD_OUTPUT_PATH, tokens)
         assert findings == [], f"утечки в dashboard.html: {findings[:5]}"

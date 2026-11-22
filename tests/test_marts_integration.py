@@ -76,7 +76,7 @@ class TestMapIdCorrection:
         )
         coverage = merged["elo_diff"].notna().mean()
         # подтверждённый Audit v2 уровень — 99.96%; допуск на единственную
-        # известную несматченную строку (5t/mapId10/marshmallow)
+        # известную несматченную строку (5t/mapId10/Player-Gamma, идентификатор анонимизирован)
         assert coverage >= 0.995
 
     def test_elo_changes_mapid_is_0_based_before_correction(self):

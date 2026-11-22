@@ -1,5 +1,7 @@
 import pandas as pd
+import pytest
 
+from config import TEAM_ALIASES_REVIEW_PATH
 from io_utils import (
     APPLICABLE_ALIAS_STATUSES,
     canonical_map_key,
@@ -70,6 +72,10 @@ class TestParseResult:
         assert r["team_score"] is None
 
 
+@pytest.mark.skipif(
+    not TEAM_ALIASES_REVIEW_PATH.exists(),
+    reason="config/team_aliases_review.csv не публикуется (строится из data/raw/) — тест требует приватных данных",
+)
 class TestTeamAliases:
     def test_only_applicable_statuses_are_merged(self, root_dir):
         alias_map, pending = load_team_alias_map()

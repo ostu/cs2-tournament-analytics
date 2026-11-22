@@ -100,8 +100,8 @@ def load_known_static_assets() -> list[str]:
     """dashboard.html инлайнит dashboard/css/styles.css и dashboard/js/app.js
     ВЕРБАТИМ (build_dashboard.py). Это статический код приложения, не данные
     — он не может "утечь", он и так публикуется как есть. Короткие реальные
-    private-токены (например, id игрока 'max') иногда совпадают с обычными
-    словами/идентификаторами кода (Math.max, переменная maxAbs) — без этого
+    private-токены (например, id из трёх букв) иногда совпадают с обычными
+    словами/идентификаторами кода — без этого
     вычитания такие совпадения дают ложную блокировку публикации. Вычитаем
     точный текст известных статических файлов перед поиском по СОДЕРЖИМОМУ
     (не по именам файлов) — если сам dashboard/js/app.js когда-нибудь будет
@@ -148,12 +148,12 @@ def self_test() -> int:
         clean_file = build_dir / "index.html"
         clean_file.write_text("<html><body>Team Alpha vs Team Beta, ADR 78.5</body></html>", encoding="utf-8")
 
-        tokens = {"cyberw", "refresh", "very_real_steam_name_123"}
+        tokens = {"zz_fake_id", "zz_fake_nick", "very_real_steam_name_123"}
         findings_clean = scan_build_dir(build_dir, tokens)
         assert not findings_clean, f"self-test: ожидали 0 находок на чистом файле, получили {findings_clean}"
 
-        leaky_file = build_dir / "player_cyberw.html"
-        leaky_file.write_text("<html><body>Player refresh had 30 kills</body></html>", encoding="utf-8")
+        leaky_file = build_dir / "player_zz_fake_id.html"
+        leaky_file.write_text("<html><body>Player zz_fake_nick had 30 kills</body></html>", encoding="utf-8")
         findings_leak = scan_build_dir(build_dir, tokens)
         assert findings_leak, "self-test: ожидали находки на файле с реальными идентификаторами, получили 0"
 
@@ -186,6 +186,16 @@ def main() -> int:
 
     tokens = collect_forbidden_tokens()
     print(f"[check_publication_leaks] запрещённых токенов (реальные id/ники/PII): {len(tokens)}")
+
+    if not tokens:
+        # Без data/raw/ и data/private/ (их нет в публичном репозитории) список
+        # известных идентификаторов пуст: скан формально проходит, но ничего не
+        # проверяет. Код возврата остаётся 0, чтобы dashboard.html можно было
+        # пересобрать из data/public/, но результат нельзя считать проверкой.
+        print("[check_publication_leaks] ВНИМАНИЕ / WARNING: список известных идентификаторов пуст "
+              "(нет data/raw/ и data/private/). Проверка НЕ ВЫПОЛНЕНА — "
+              "the leak scan is a no-op without the private reference data.")
+        return 0
 
     findings = scan_build_dir(build_dir, tokens)
 

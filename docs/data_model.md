@@ -133,7 +133,7 @@ map_number_canonical=map_number`) — используется дашбордо�
 ## 6. Dashboard (`dashboard.html`, `build_dashboard.py`)
 
 Один self-contained HTML: инлайнит `dashboard/css/styles.css`, `dashboard/js/app.js`,
-все 8 файлов `data/public/*.json` (как `window.APP_DATA`), `config/dashboard_config.json` (как
+все 9 файлов `data/public/*.json` (как `window.APP_DATA`), `config/dashboard_config.json` (как
 `window.APP_CONFIG`). Внешняя зависимость — только Apache ECharts (CDN, с документированным
 офлайн-fallback). Проверяется leak checker'ом перед тем, как считаться готовым к публикации.
 
